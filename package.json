@@ -1,0 +1,23 @@
+{
+  "name": "lantern-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rknightuk/lantern-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rknightuk/lantern-api/issues"
+  },
+  "homepage": "https://github.com/rknightuk/lantern-api#readme",
+  "dependencies": {
+    "node-fetch": "^3.3.0"
+  }
+}

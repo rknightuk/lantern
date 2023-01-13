@@ -1,3 +1,5 @@
+import fetch from 'node-fetch'
+
 export const handler = async (event) => {
   const TMDB_PATH = `https://api.themoviedb.org/3/search/tv?api_key=${process.env.MOVIEDBKEY}` +
   `&query=${event.queryStringParameters.search}`

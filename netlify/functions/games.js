@@ -1,3 +1,5 @@
+import fetch from 'node-fetch'
+
 export const handler = async (event) => {
   const GB_PATH = `http://www.giantbomb.com/api/search?api_key=${process.env.GIANTBOMBKEY}` +
   `&query=${event.queryStringParameters.search}&format=json`
