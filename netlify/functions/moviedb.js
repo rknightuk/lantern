@@ -14,7 +14,7 @@ if (event.httpMethod === 'OPTIONS') {
     }
   }
 
-  const TMDB_PATH = `https://api.themoviedb.org/3/search/${event.queryStringParameters.type}?api_key=${process.env.MOVIEDBKEY}` +
+  const TMDB_PATH = `http://api.themoviedb.org/3/search/${event.queryStringParameters.type}?api_key=${process.env.MOVIEDBKEY}` +
   `&query=${event.queryStringParameters.search}`
 
   const response = await fetch(TMDB_PATH)
