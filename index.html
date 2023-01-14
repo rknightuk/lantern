@@ -163,8 +163,14 @@
                             {
                                 postTitle += ` - ${getRating()}`
                             }
+                            const emojis = {
+                                'tv': '📺',
+                                'movie': '🍿',
+                                'game': '🎮'
+                            }
+                            const emoji = emojis[getActiveType()]
                             const posterImage = dataset.poster !== 'null' ? `![${dataset.title} poster](${dataset.poster})` : ''
-                            document.getElementById('mb-post').text.value = `${postTitle}\n\n${posterImage}`
+                            document.getElementById('mb-post').text.value = `${emoji} ${postTitle}\n\n${posterImage}`
                         })
                     })
                 }
