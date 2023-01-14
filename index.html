@@ -40,17 +40,35 @@
     </div>
 
     <div class="selectors">
-        <div class="selector-type active" data-type="game">
+        <div class="selector-type active" data-type="game" data-api="games">
             <svg class="icon"><use xlink:href="#game"></use></svg>
             Games
         </div>
-        <div class="selector-type" data-type="tv">
+        <div class="selector-type" data-type="tv" data-api="moviedb">
             <svg class="icon"><use xlink:href="#tv"></use></svg>
             TV
         </div>
-        <div class="selector-type" data-type="movie">
+        <div class="selector-type" data-type="movie" data-api="moviedb">
             <svg class="icon"><use xlink:href="#movie"></use></svg>
             Movies
+        </div>
+        <div class="selector-type" data-type="album" data-api="music">
+            <svg class="icon">
+                <use xlink:href="#music-album"></use>
+            </svg>
+            Album
+        </div>
+        <div class="selector-type" data-type="track" data-api="music">
+            <svg class="icon">
+                <use xlink:href="#music-song"></use>
+            </svg>
+            Song
+        </div>
+        <div class="selector-type" data-type="artist" data-api="music">
+            <svg class="icon">
+                <use xlink:href="#music-artist"></use>
+            </svg>
+            Artist
         </div>
     </div>
     <form id="search-form" class="search-form">
@@ -97,6 +115,10 @@
                 return document.getElementsByClassName('selector-type active')[0].dataset.type
             }
 
+            getApiEndpoint = () => {
+                return document.getElementsByClassName('selector-type active')[0].dataset.api
+            }
+
             // choose media type
             const typeSelectors = Array.from(document.getElementsByClassName('selector-type'))
             typeSelectors.forEach(function(element) {
@@ -108,7 +130,10 @@
                     const placeholders = {
                         'tv': 'Tots TV',
                         'movie': 'Breakin\' 2: Electric Boogaloo',
-                        'game': 'Disney Extreme Skate Adventure'
+                        'game': 'Disney Extreme Skate Adventure',
+                        'album': 'Hybrid Theory',
+                        'track': 'Never Gunna Give You Up',
+                        'artist': 'B*Witched',
                     }
                     document.getElementById('search').placeholder = placeholders[getActiveType()]
                 });
@@ -127,7 +152,7 @@
                 searchButton.value = 'Loading...'
 
                 const type = getActiveType()
-                const apiType = type === 'game' ? 'games' : 'moviedb'
+                const apiType = getApiEndpoint()
 
                 fetch(
                 `/.netlify/functions/${apiType}?search=${query}&type=${type}`,
@@ -169,7 +194,10 @@
                             const emojis = {
                                 'tv': '📺',
                                 'movie': '🍿',
-                                'game': '🎮'
+                                'game': '🎮',
+                                'track': '🎵',
+                                'album': '🎵',
+                                'artist': '🎵',
                             }
                             const emoji = emojis[getActiveType()]
                             const posterImage = dataset.poster !== 'null' ? `![${dataset.title} poster](${dataset.poster})` : ''
@@ -179,7 +207,6 @@
                 }
 
                 renderResult = (result) => {
-                    console.log("here")
                     const el = document.getElementById("result_template").cloneNode(true)
                     el.id = null
                     el.dataset.id = result.id
@@ -223,6 +250,18 @@
                 <path
                     d="M400 244v-8c0-6.6 5.4-12 12-12h8c6.6 0 12 5.4 12 12v8c0 6.6-5.4 12-12 12h-8c-6.6 0-12-5.4-12-12zm12 76h8c6.6 0 12-5.4 12-12v-8c0-6.6-5.4-12-12-12h-8c-6.6 0-12 5.4-12 12v8c0 6.6 5.4 12 12 12zm-36-136.5s-1.5-7.5-144-7.5-144.5 7.5-144.5 7.5S80 184 80 288s7.5 104.5 7.5 104.5S88 400 232 400s144-7.5 144-7.5 7.5-.5 7.5-104.5-7.5-104.5-7.5-104.5zM512 144v288c0 26.5-21.5 48-48 48h-16v32h-48l-10.7-32H122.7L112 512H64v-32H48c-26.5 0-48-21.5-48-48V144c0-26.5 21.5-48 48-48h140.9l-54-55.2c-9.3-9.5-9.1-24.7.3-33.9 9.5-9.3 24.7-9.1 33.9.3L256 96l86.9-88.8c9.3-9.5 24.5-9.6 33.9-.3 9.5 9.3 9.6 24.5.3 33.9l-54 55.2H464c26.5 0 48 21.5 48 48zm-48 0H48v288h416V144z">
                 </path>
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" id="music-album">
+                <path
+                    d="M416 32H32A32 32 0 0 0 0 64v384a32 32 0 0 0 32 32h384a32 32 0 0 0 32-32V64a32 32 0 0 0-32-32zm-16 400H48V80h352zm-176-32A144 144 0 1 0 80 256a144 144 0 0 0 144 144zm0-168a24 24 0 1 1-24 24 24 24 0 0 1 24-24z" />
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="music-song">
+                <path
+                    d="M480.06 0a31.94 31.94 0 0 0-9.68 1.5l-304 96A32 32 0 0 0 144 128v235.09A109.68 109.68 0 0 0 96 352c-53 0-96 35.81-96 80s43 80 96 80c49.38 0 89.56-31.16 94.91-71.09a38.74 38.74 0 0 0 1.06-8.66V256l272-85.91v129A109.78 109.78 0 0 0 416 288c-53 0-96 35.81-96 80s43 80 96 80c49.38 0 89.56-31.19 94.94-71.12a38.94 38.94 0 0 0 1-8.22c0-.22.06-.44.06-.66V32a32 32 0 0 0-31.94-32zM96 464c-28.28 0-48-16.88-48-32s19.72-32 48-32 48 16.84 48 32-19.72 32-48 32zm368-96c0 15.12-19.72 32-48 32s-48-16.88-48-32 19.72-32 48-32 48 16.84 48 32zm0-248.25l-272 85.91v-65.91l272-85.87z" />
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" id="music-artist">
+                <path
+                    d="M598.36 97.51l-112 35.38A32 32 0 0 0 464 163.36v203.12c-18.16-9.07-40.16-14.48-64-14.48-61.86 0-112 35.82-112 80s50.14 80 112 80 112-35.82 112-80V291.36L617.64 258A32 32 0 0 0 640 227.48V128a32 32 0 0 0-41.64-30.49zM400 464c-39.7 0-64-20.72-64-32s24.3-32 64-32 64 20.72 64 32-24.3 32-64 32zm192-248.25L512 241v-65.88l80-25.26zM262.46 464H48v-25.59A86.56 86.56 0 0 1 134.41 352c14.59 0 38.28 16 89.59 16 32.8 0 54.08-6.42 69.05-11.13 21.76-18.79 51.57-31.47 85.83-35.26-19.41-10.88-41.46-17.61-65.29-17.61-28.68 0-42.5 16-89.59 16s-60.81-16-89.59-16A134.43 134.43 0 0 0 0 438.41V464a48 48 0 0 0 48 48h250.42a107.94 107.94 0 0 1-35.96-48zM224 288A144 144 0 1 0 80 144a144 144 0 0 0 144 144zm0-240a96 96 0 1 1-96 96 96.14 96.14 0 0 1 96-96z" />
             </symbol>
         </svg>
 
