@@ -64,7 +64,9 @@
 
             getRating = () => {
                 const full = 5
-                const rating = parseInt(document.querySelector(`input[name="rating"]:checked`).value, 10)
+                const checked = document.querySelector(`input[name="rating"]:checked`)
+                if (!checked) return null
+                const rating = parseInt(checked.value, 10)
                 if (!rating) return null
 
                 let stars = ''
