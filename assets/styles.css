@@ -64,6 +64,9 @@ h1 img {
     padding: 16px;
     border-radius: 50px;
     margin: 0 10px;
+    flex-direction: column;
+    width: 65px;
+    height: 65px;
 }
 
 .selector-type:hover {
@@ -72,12 +75,14 @@ h1 img {
 
 .selector-type.active {
     background-color: var(--links);
+    color: black;
 }
 
 .selector-type svg {
     width: 40px;
     height: 40px;
     color: var(--links);
+    margin-bottom: 3px;
 }
 
 .selector-type.active svg {
