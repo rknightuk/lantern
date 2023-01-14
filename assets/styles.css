@@ -1,0 +1,167 @@
+:root {
+    --links: #E6D1A4;
+}
+
+h1 img {
+    width: 40px;
+    margin-right: 10px;
+}
+
+.login {
+    display: flex;
+    justify-content: center;
+}
+
+.login__input {
+    width: 300px;
+}
+
+.login__remember {
+    text-align: center;
+}
+
+.errors {
+    text-align: center;
+    font-weight: bold;
+    font-style: italic;
+    color: #e74c3c;
+}
+
+#link__template {
+    display: none;
+}
+
+.header {
+    text-align: center;
+}
+
+.header h1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.search {
+    width: 300px;
+}
+
+.hidden {
+    display: none;
+}
+
+.selectors {
+    display: flex;
+    justify-content: center;
+}
+
+.selector-type {
+    border: 3px solid var(--links);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    padding: 16px;
+    border-radius: 50px;
+    margin: 0 10px;
+}
+
+.selector-type:hover {
+    cursor: pointer;
+}
+
+.selector-type.active {
+    background-color: var(--links);
+}
+
+.selector-type svg {
+    width: 40px;
+    height: 40px;
+    color: var(--links);
+}
+
+.selector-type.active svg {
+    fill: var(--background-body);
+}
+
+.search-form {
+    margin-top: 10px;
+}
+
+#search {
+    box-sizing: border-box;
+    width: 100%;
+}
+
+#result_template {
+    display: none;
+}
+
+.search-results {
+    max-height: 450px;
+    overflow: auto;
+    margin-bottom: 10px;
+}
+
+.result {
+    background-repeat: no-repeat;
+    background-size: cover!important;
+    height: 75px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5px 0;
+    background: #e0e0e0;
+}
+
+.result__title {
+    color: white;
+    background: black;
+    padding: 10px;
+    border: 1px solid white;
+}
+
+.icon {
+    fill: var(--links);
+    /* stroke: red; */
+}
+
+.ratings {
+    font-size: 2em;
+    direction: rtl;
+    unicode-bidi: bidi-override;
+    width: 200px;
+    margin: 15px auto;
+}
+
+.ratings>input {
+    display: none;
+}
+
+.ratings>input+label {
+    display: inline-block;
+    overflow: hidden;
+    text-indent: 9999px;
+    width: 1em;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.ratings>input+label::before {
+    display: inline-block;
+    text-indent: -9999px;
+    content: "☆";
+    color: #888;
+}
+
+.ratings>input:checked~label:before {
+    color: var(--links);
+    content: "★";
+}
+
+.ratings button {
+    font-size: 12px;
+    padding: 5px 10px;
+    margin: 0 auto;
+    display: flex;
+}

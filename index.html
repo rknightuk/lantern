@@ -1,1 +1,207 @@
-hello
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="/assets/water.css" type="text/css" media="screen" title="no title" charset="utf-8">
+    <link rel="stylesheet" href="/assets/styles.css" type="text/css" media="screen" title="no title" charset="utf-8">
+
+    <title>Lantern - Post reviews to Micro.blog</title>
+
+</head>
+    <body>
+
+
+    <div class="header">
+        <h1><img src="/assets/lantern.svg">Lantern</h1>
+        <p>Post movie, TV, and game reviews to Micro.blog<p>
+    </div>
+
+    <div class="ratings">
+        <input type="radio" id="rating-5" name="rating" value="5"><label for="rating-5">5</label>
+        <input type="radio" id="rating-4" name="rating" value="4"><label for="rating-4">4</label>
+        <input type="radio" id="rating-3" name="rating" value="3"><label for="rating-3">3</label>
+        <input type="radio" id="rating-2" name="rating" value="2"><label for="rating-2">2</label>
+        <input type="radio" id="rating-1" name="rating" value="1"><label for="rating-1">1</label>
+        <button class="rating-reset" id="reset-rating">reset rating</button>
+    </div>
+
+    <div class="selectors">
+        <div class="selector-type active" data-type="game">
+            <svg class="icon"><use xlink:href="#game"></use></svg>
+        </div>
+        <div class="selector-type" data-type="tv">
+            <svg class="icon"><use xlink:href="#tv"></use></svg>
+        </div>
+        <div class="selector-type" data-type="movie">
+            <svg class="icon"><use xlink:href="#movie"></use></svg>
+        </div>
+    </div>
+    <form id="search-form" class="search-form">
+        <input type="text" name="search" id="search" placeholder="Disney Extreme Skate Adventure">
+        <input type="submit" value="Search" id="search-button">
+    </form>
+
+    <div id="search-results" class="search-results">
+
+    </div>
+
+    <form id="mb-post" action="https://micro.blog/post" target="_blank">
+        <textarea name="text" id="text"></textarea>
+        <input type="submit" value="Open in Micro.blog">
+    </form>
+
+    <script>
+        (function() {
+
+            document.getElementById('reset-rating').addEventListener('click', () => {
+                document.querySelectorAll(`input[name="rating"]`).forEach(e => {
+                    e.checked = false
+                })
+            })
+
+            getRating = () => {
+                const full = 5
+                const rating = parseInt(document.querySelector(`input[name="rating"]:checked`).value, 10)
+                if (!rating) return null
+
+                let stars = ''
+                for (var i = 0; i < rating; i++) {
+                    stars += '★'
+                }
+                for (var i = 0; i < full - rating; i++) {
+                    stars += '☆'
+                }
+                return stars
+            }
+
+            getActiveType = () => {
+                return document.getElementsByClassName('selector-type active')[0].dataset.type
+            }
+
+            // choose media type
+            const typeSelectors = Array.from(document.getElementsByClassName('selector-type'))
+            typeSelectors.forEach(function(element) {
+                element.addEventListener('click', function(e) {
+                    typeSelectors.forEach(function(ts) {
+                        ts.className = ts.className.replace('active', '')
+                    })
+                    e.currentTarget.className += ' active'
+                    const placeholders = {
+                        'tv': 'Tots TV',
+                        'movie': 'Breakin\' 2: Electric Boogaloo',
+                        'game': 'Disney Extreme Skate Adventure'
+                    }
+                    document.getElementById('search').placeholder = placeholders[getActiveType()]
+                });
+            })
+
+            // listen for form submit
+            const searchForm = document.getElementById('search-form')
+            searchForm.addEventListener('submit', function(e) {
+                e.preventDefault()
+                const searchButton = document.getElementById('search-button')
+                const query = searchForm['search'].value
+                if (!query)
+                {
+                    return
+                }
+                searchButton.value = 'Loading...'
+
+                const type = getActiveType()
+                const apiType = type === 'game' ? 'games' : 'moviedb'
+
+                fetch(
+                `/.netlify/functions/${apiType}?search=${query}&type=${type}`,
+                {
+                    method: 'get',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                },
+                ).then(response => response.json())
+                    .then(data => {
+                        searchButton.value = 'search'
+                        renderResults(data)
+                    })
+                })
+
+                renderResults = (results) => {
+                    document.getElementById('search-results').innerHTML = ''
+                    results.map(r => {
+                        renderResult(r)
+                    })
+
+                    document.querySelectorAll('.result').forEach(item => {
+                        item.addEventListener('click', e => {
+                            e.preventDefault()
+                            document.querySelectorAll('.result').forEach(r => {
+                                if (r.dataset.id !== e.currentTarget.dataset.id && r.id !== 'result_template')
+                                {
+                                    r.remove()
+                                }
+                            })
+                            const type = getActiveType()
+                            const dataset = e.currentTarget.dataset
+                            let postTitle = `[${dataset.title}${dataset.year !== 'null' ? ` (${dataset.year})` : ''}](${dataset.link})`
+                            if (getRating())
+                            {
+                                postTitle += ` - ${getRating()}`
+                            }
+                            const posterImage = dataset.poster !== 'null' ? `![${dataset.title} poster](${dataset.poster})` : ''
+                            document.getElementById('mb-post').text.value = `${postTitle}\n\n${posterImage}`
+                        })
+                    })
+                }
+
+                renderResult = (result) => {
+                    console.log("here")
+                    const el = document.getElementById("result_template").cloneNode(true)
+                    el.id = null
+                    el.dataset.id = result.id
+                    el.dataset.title = result.title
+                    el.dataset.year = result.year
+                    el.dataset.link = result.link
+                    el.dataset.poster = result.poster
+                    el.dataset.backdrop = result.backdrop
+                    el.style.backgroundImage = `url('${result.backdrop}')`
+                    el.getElementsByClassName('result__title')[0].innerText = `${result.title}${result.year ? `- ${result.year}` : ''}`
+                    document.getElementById('search-results').append(el)
+                }
+
+        })();
+    </script>
+
+    <a id="result_template" href="#" class="result">
+        <div class="result__title">
+            The Last of Us - 2013 - (PS3,PS3N,PS4)
+        </div>
+    </a>
+
+
+        <footer>
+            <a href="https://github.com/rknightuk/lantern" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes  octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+            <p>Made by <a href="http://rknight.me">Robb Knight</a> &bull; <a href="https://www.buymeacoffee.com/rknightuk">Buy me a Coffee</a> &bull; Softies icons by <a href="https://robbiepearce.com/softies/">Robbie Pearce</a></p>
+        </footer>
+
+        <svg width="0" height="0" style="display: none;">
+            <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" id="game">
+                <path
+                    d="M352 0H32A32 32 0 0 0 0 32v448a32 32 0 0 0 32 32h256a96 96 0 0 0 96-96V32a32 32 0 0 0-32-32zm-16 416a48.05 48.05 0 0 1-48 48H48V48h288zM112 240h144a32 32 0 0 0 32-32V96a16 16 0 0 0-16-16H112a16 16 0 0 0-16 16v128a16 16 0 0 0 16 16zM88 352h24v24a8 8 0 0 0 8 8h16a8 8 0 0 0 8-8v-24h24a8 8 0 0 0 8-8v-16a8 8 0 0 0-8-8h-24v-24a8 8 0 0 0-8-8h-16a8 8 0 0 0-8 8v24H88a8 8 0 0 0-8 8v16a8 8 0 0 0 8 8zm144-16a24 24 0 1 0 24 24 24 24 0 0 0-24-24zm24-24a24 24 0 1 0 24-24 24 24 0 0 0-24 24z" />
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="movie">
+                <path
+                    d="M488 64h-8v20c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12V64H96v20c0 6.6-5.4 12-12 12H44c-6.6 0-12-5.4-12-12V64h-8C10.7 64 0 74.7 0 88v336c0 13.3 10.7 24 24 24h8v-20c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v20h320v-20c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v20h8c13.3 0 24-10.7 24-24V88c0-13.3-10.7-24-24-24zM96 372c0 6.6-5.4 12-12 12H44c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm0-96c0 6.6-5.4 12-12 12H44c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm0-96c0 6.6-5.4 12-12 12H44c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm288 208c0 6.6-5.4 12-12 12H140c-6.6 0-12-5.4-12-12v-96c0-6.6 5.4-12 12-12h232c6.6 0 12 5.4 12 12v96zm0-168c0 6.6-5.4 12-12 12H140c-6.6 0-12-5.4-12-12v-96c0-6.6 5.4-12 12-12h232c6.6 0 12 5.4 12 12v96zm96 152c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm0-96c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm0-96c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40z">
+                </path>
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="tv">
+                <path
+                    d="M400 244v-8c0-6.6 5.4-12 12-12h8c6.6 0 12 5.4 12 12v8c0 6.6-5.4 12-12 12h-8c-6.6 0-12-5.4-12-12zm12 76h8c6.6 0 12-5.4 12-12v-8c0-6.6-5.4-12-12-12h-8c-6.6 0-12 5.4-12 12v8c0 6.6 5.4 12 12 12zm-36-136.5s-1.5-7.5-144-7.5-144.5 7.5-144.5 7.5S80 184 80 288s7.5 104.5 7.5 104.5S88 400 232 400s144-7.5 144-7.5 7.5-.5 7.5-104.5-7.5-104.5-7.5-104.5zM512 144v288c0 26.5-21.5 48-48 48h-16v32h-48l-10.7-32H122.7L112 512H64v-32H48c-26.5 0-48-21.5-48-48V144c0-26.5 21.5-48 48-48h140.9l-54-55.2c-9.3-9.5-9.1-24.7.3-33.9 9.5-9.3 24.7-9.1 33.9.3L256 96l86.9-88.8c9.3-9.5 24.5-9.6 33.9-.3 9.5 9.3 9.6 24.5.3 33.9l-54 55.2H464c26.5 0 48 21.5 48 48zm-48 0H48v288h416V144z">
+                </path>
+            </symbol>
+        </svg>
+
+    </body>
+</html>
