@@ -50,20 +50,22 @@ h1 img {
 }
 
 .selectors {
-    display: flex;
-    justify-content: center;
+    /* display: flex;
+    justify-content: center; */
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 5px;
 }
 
 .selector-type {
-    border: 3px solid var(--links);
     text-align: center;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 5px;
-    padding: 16px;
-    border-radius: 50px;
     margin: 0 10px;
+    flex-direction: column;
+    border-bottom: 3px solid var(--background-body);
 }
 
 .selector-type:hover {
@@ -71,17 +73,13 @@ h1 img {
 }
 
 .selector-type.active {
-    background-color: var(--links);
+    border-bottom: 3px solid var(--links);
 }
 
 .selector-type svg {
     width: 40px;
     height: 40px;
     color: var(--links);
-}
-
-.selector-type.active svg {
-    fill: var(--background-body);
 }
 
 .search-form {
