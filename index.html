@@ -178,7 +178,7 @@
                     el.dataset.poster = result.poster
                     el.dataset.backdrop = result.backdrop
                     el.style.backgroundImage = `url('${result.backdrop}')`
-                    el.getElementsByClassName('result__title')[0].innerText = `${result.title}${result.year ? `- ${result.year}` : ''}`
+                    el.getElementsByClassName('result__title')[0].innerText = `${result.title}${result.year ? ` - ${result.year}` : ''}`
                     document.getElementById('search-results').append(el)
                 }
 
