@@ -196,9 +196,11 @@
                             const type = getActiveType()
                             const dataset = e.currentTarget.dataset
                             let postTitle = `[${dataset.title}${dataset.year !== 'null' ? ` (${dataset.year})` : ''}](${dataset.link})`
+                            let plainTextTitle = `${dataset.title}${dataset.year !== 'null' ? ` (${dataset.year})` : ''} ${dataset.link}`
                             if (getRating())
                             {
                                 postTitle += ` - ${getRating()}`
+                                plainTextTitle += ` - ${getRating()}`
                             }
                             const emojis = {
                                 'tv': '📺',
@@ -211,7 +213,7 @@
                             const emoji = emojis[getActiveType()]
                             const posterImage = dataset.poster !== 'null' ? `![${dataset.title} poster](${dataset.poster})` : ''
                             document.getElementById('mb-post').text.value = `${emoji} ${postTitle}\n\n${posterImage}`
-                            document.getElementById('don-post').text.value = `${dataset.title}${dataset.year !== 'null' ? ` (${dataset.year})` : ''} ${dataset.link}`
+                            document.getElementById('don-post').text.value = `${emoji} ${plainTextTitle}`
                         })
                     })
                 }
