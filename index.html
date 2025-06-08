@@ -211,7 +211,7 @@
                             const emoji = emojis[getActiveType()]
                             const posterImage = dataset.poster !== 'null' ? `![${dataset.title} poster](${dataset.poster})` : ''
                             document.getElementById('mb-post').text.value = `${emoji} ${postTitle}\n\n${posterImage}`
-                            document.getElementById('don-post').text.value = `${emoji} ${postTitle}\n\n${posterImage}`
+                            document.getElementById('don-post').text.value = `${dataset.title}${dataset.year !== 'null' ? ` (${dataset.year})` : ''} ${dataset.link}`
                         })
                     })
                 }
