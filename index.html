@@ -85,6 +85,11 @@
         <input type="submit" value="Open in Micro.blog">
     </form>
 
+    <form id="don-post" action="https://https://mastodonshare.com/" target="_blank">
+        <textarea name="text" id="text"></textarea>
+        <input type="submit" value="Share to Mastodon">
+    </form>
+
     <button value="Copy to Clipboard" onclick="navigator.clipboard.writeText(document.getElementById('text').value)">Copy to Clipboard</button>
 
     <script>
@@ -204,6 +209,7 @@
                             const emoji = emojis[getActiveType()]
                             const posterImage = dataset.poster !== 'null' ? `![${dataset.title} poster](${dataset.poster})` : ''
                             document.getElementById('mb-post').text.value = `${emoji} ${postTitle}\n\n${posterImage}`
+                            document.getElementById('don-post').text.value = `${emoji} ${postTitle}\n\n${posterImage}`
                         })
                     })
                 }
